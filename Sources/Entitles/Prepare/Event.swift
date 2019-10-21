@@ -27,8 +27,19 @@ struct Event {
     }
     
     var partsId: [Int]
+    var parts: Children<Event, Part> {
+        return parent(\.partsId)
+    }
+    
     var notesId: [Int]
-    var photoId: [Int]
+    var notes: Children<Event, Note> {
+        return parent(\.notesId)
+    }
+    
+    var photosId: [Int]
+    var photos: Children<Event, Photo> {
+        return parent(\.photosId)
+    }
 }
 
 struct Period {
