@@ -4,8 +4,9 @@ import FluentSQLite
 
 /// Creates new users and logs them in.
 final class UserController {
+    
     /// Logs a user in, returning a token for accessing protected endpoints.
-    func login(_ req: Request) throws -> Future<UserToken> {
+    func login(_ req: Request) throws -> Future<LoginResponce> {
         // get user auth'd by basic auth middleware
         let user = try req.requireAuthenticated(User.self)
         
@@ -13,39 +14,61 @@ final class UserController {
         let token = try UserToken.create(userID: user.requireID())
         
         // save and return token
-        return token.save(on: req)
+        return token.save(on: req).map { (token) -> (LoginResponce) in
+            return LoginResponce(user: user.forClient(), token: token)
+        }
     }
     
     /// Creates a new user.
     func create(_ req: Request) throws -> Future<UserResponse> {
         // decode request content
-        return try req.content.decode(CreateUserRequest.self).flatMap { user -> Future<User> in
-            // verify that passwords match
-            guard user.password == user.verifyPassword else {
+        return try req.content.decode(CreateUserRequest.self).flatMap { request -> Future<User> in
+            
+            guard request.password == request.verifyPassword else {
                 throw Abort(.badRequest, reason: "Password and verification must match.")
             }
             
-            // hash user's password using BCrypt
-            let hash = try BCrypt.hash(user.password)
-            // save new user
-            return User(id: nil, name: user.name, email: user.email, passwordHash: hash)
-                .save(on: req)
+            let hash = try BCrypt.hash(request.password)
+            
+            return User(email: request.email, orgInfo: request.orgInfo, passwordHash: hash).save(on: req)
         }.map { user in
             // map to public user response (omits password hash)
-            return try UserResponse(id: user.requireID(), name: user.name, email: user.email)
+            return try UserResponse(id: user.requireID(), email: user.email)
         }
     }
 }
 
+extension UserController {
+    
+    func change(_ req: Request) throws -> Future<UserForClient> {
+        // fetch auth'd user
+        let user = try req.requireAuthenticated(User.self)
+        
+        // decode request content
+        return try req.content.decode(UserForClient.self).flatMap { userForClient in
+            // save new todo
+            return user.change(with: userForClient)
+                .save(on: req).map({ (user) -> (UserForClient) in
+                    return user.forClient()
+                })
+        }
+    }
+    
+}
+
 // MARK: Content
+
+struct LoginResponce: Content {
+    var user: UserForClient
+    var token: UserToken
+}
 
 /// Data required to create a user.
 struct CreateUserRequest: Content {
-    /// User's full name.
-    var name: String
-    
     /// User's email address.
     var email: String
+    
+    var orgInfo: String
     
     /// User's desired password.
     var password: String
@@ -59,9 +82,6 @@ struct UserResponse: Content {
     /// User's unique identifier.
     /// Not optional since we only return users that exist in the DB.
     var id: Int
-    
-    /// User's full name.
-    var name: String
     
     /// User's email address.
     var email: String
