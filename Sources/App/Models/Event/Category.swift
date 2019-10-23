@@ -6,19 +6,20 @@
 //  Copyright © 2019 варя. All rights reserved.
 //
 
-import Foundation
-
 import FluentSQLite
 import Vapor
 
-class Category {
-
-    final class Model: SQLiteModel {
+extension Private {
+    final class Category: SQLiteModel {
         
         var id: Int?
         
         var title: String
         var iconId: String?
+        
+        var events: Children<Category, Event> {
+            return children(\.categoryId)
+        }
 
         init(id: Int? = nil, title: String, iconId: String? = nil) {
             self.id = id
@@ -26,12 +27,11 @@ class Category {
             self.iconId = iconId
         }
     }
-
 }
 /// Allows `Category` to be used as a Fluent migration.
-extension Category.Model: Migration {
+extension Private.Category: Migration {
     static func prepare(on conn: SQLiteConnection) -> Future<Void> {
-        return SQLiteDatabase.create(Category.Model.self, on: conn) { builder in
+        return SQLiteDatabase.create(Private.Category.self, on: conn) { builder in
             builder.field(for: \.id, isIdentifier: true)
             builder.field(for: \.title)
             builder.field(for: \.iconId)
@@ -41,5 +41,5 @@ extension Category.Model: Migration {
     }
 }
 
-extension Category.Model: Content { }
-extension Category.Model: Parameter { }
+extension Private.Category: Content { }
+extension Private.Category: Parameter { }

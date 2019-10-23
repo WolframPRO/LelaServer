@@ -10,10 +10,10 @@ final class Todo: SQLiteModel {
     var title: String
     
     /// Reference to user that owns this TODO.
-    var userID: User.ID
+    var userID: Private.User.ID
 
     /// Creates a new `Todo`.
-    init(id: Int? = nil, title: String, userID: User.ID) {
+    init(id: Int? = nil, title: String, userID: Private.User.ID) {
         self.id = id
         self.title = title
         self.userID = userID
@@ -22,7 +22,7 @@ final class Todo: SQLiteModel {
 
 extension Todo {
     /// Fluent relation to user that owns this todo.
-    var user: Parent<Todo, User> {
+    var user: Parent<Todo, Private.User> {
         return parent(\.userID)
     }
 }
@@ -34,7 +34,7 @@ extension Todo: Migration {
             builder.field(for: \.id, isIdentifier: true)
             builder.field(for: \.title)
             builder.field(for: \.userID)
-            builder.reference(from: \.userID, to: \User.id)
+            builder.reference(from: \.userID, to: \Private.User.id)
         }
     }
 }

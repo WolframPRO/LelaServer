@@ -6,7 +6,7 @@ final class TodoController {
     /// Returns a list of all todos for the auth'd user.
     func index(_ req: Request) throws -> Future<[Todo]> {
         // fetch auth'd user
-        let user = try req.requireAuthenticated(User.self)
+        let user = try req.requireAuthenticated(Private.User.self)
         
         // query all todo's belonging to user
         return try Todo.query(on: req)
@@ -16,7 +16,7 @@ final class TodoController {
     /// Creates a new todo for the auth'd user.
     func create(_ req: Request) throws -> Future<Todo> {
         // fetch auth'd user
-        let user = try req.requireAuthenticated(User.self)
+        let user = try req.requireAuthenticated(Private.User.self)
         
         // decode request content
         return try req.content.decode(CreateTodoRequest.self).flatMap { todo in
@@ -29,7 +29,7 @@ final class TodoController {
     /// Deletes an existing todo for the auth'd user.
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
         // fetch auth'd user
-        let user = try req.requireAuthenticated(User.self)
+        let user = try req.requireAuthenticated(Private.User.self)
         
         // decode request parameter (todos/:id)
         return try req.parameters.next(Todo.self).flatMap { todo -> Future<Void> in

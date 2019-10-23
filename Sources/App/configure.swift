@@ -31,10 +31,10 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     /// Configure migrations
     var migrations = MigrationConfig()
-    migrations.add(model: User.self, database: .sqlite)
-    migrations.add(model: UserToken.self, database: .sqlite)
+    migrations.add(model: Private.User.self, database: .sqlite)
+    migrations.add(model: Private.UserToken.self, database: .sqlite)
     migrations.add(model: Todo.self, database: .sqlite)
-    migrations.add(model: Category.Model.self, database: .sqlite)
+    migrations.add(model: Private.Category.self, database: .sqlite)
     services.register(migrations)
 
 }

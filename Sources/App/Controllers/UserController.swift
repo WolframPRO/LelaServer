@@ -8,10 +8,10 @@ final class UserController {
     /// Logs a user in, returning a token for accessing protected endpoints.
     func login(_ req: Request) throws -> Future<LoginResponce> {
         // get user auth'd by basic auth middleware
-        let user = try req.requireAuthenticated(User.self)
+        let user = try req.requireAuthenticated(Private.User.self)
         
         // create new token for this user
-        let token = try UserToken.create(userID: user.requireID())
+        let token = try Private.UserToken.create(userID: user.requireID())
         
         // save and return token
         return token.save(on: req).map { (token) -> (LoginResponce) in
@@ -22,7 +22,7 @@ final class UserController {
     /// Creates a new user.
     func create(_ req: Request) throws -> Future<UserResponse> {
         // decode request content
-        return try req.content.decode(CreateUserRequest.self).flatMap { request -> Future<User> in
+        return try req.content.decode(CreateUserRequest.self).flatMap { request -> Future<Private.User> in
             
             guard request.password == request.verifyPassword else {
                 throw Abort(.badRequest, reason: "Password and verification must match.")
@@ -30,7 +30,7 @@ final class UserController {
             
             let hash = try BCrypt.hash(request.password)
             
-            return User(email: request.email, orgInfo: request.orgInfo, passwordHash: hash).save(on: req)
+            return Private.User(email: request.email, orgInfo: request.orgInfo, passwordHash: hash).save(on: req)
         }.map { user in
             // map to public user response (omits password hash)
             return try UserResponse(id: user.requireID(), email: user.email)
@@ -42,7 +42,7 @@ extension UserController {
     
     func change(_ req: Request) throws -> Future<UserForClient> {
         // fetch auth'd user
-        let user = try req.requireAuthenticated(User.self)
+        let user = try req.requireAuthenticated(Private.User.self)
         
         // decode request content
         return try req.content.decode(UserForClient.self).flatMap { userForClient in
@@ -60,7 +60,7 @@ extension UserController {
 
 struct LoginResponce: Content {
     var user: UserForClient
-    var token: UserToken
+    var token: Private.UserToken
 }
 
 /// Data required to create a user.
