@@ -35,6 +35,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: Private.UserToken.self, database: .sqlite)
     migrations.add(model: Todo.self, database: .sqlite)
     migrations.add(model: Private.Category.self, database: .sqlite)
+    migrations.add(model: Private.Event.self, database: .sqlite)
+    migrations.add(model: Private.Note.self, database: .sqlite)
+    migrations.add(model: Private.Period.self, database: .sqlite)
     services.register(migrations)
 
 }

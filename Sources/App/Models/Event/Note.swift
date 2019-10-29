@@ -9,6 +9,20 @@
 import FluentSQLite
 import Vapor
 
+extension Public {
+    struct Note: Content {
+        var id: Int
+        var number: Int
+        var theme: String?
+        var text: String
+        var time: Date
+        var personId: Int
+        var isAnonimus: Bool
+        
+//        var attachmentId: Int?
+    }
+}
+
 extension Private {
     final class Note: SQLiteModel {
         
@@ -32,6 +46,10 @@ extension Private {
             self.personId = personId
             self.isAnonimus = isAnonimus
             self.attachmentId = attachmentId
+        }
+        
+        func toPublic() -> Public.Note {
+            return Public.Note(id: id!, number: number, theme: theme, text: text, time: time, personId: personId, isAnonimus: isAnonimus)
         }
         
     }

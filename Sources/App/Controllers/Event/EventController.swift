@@ -16,12 +16,12 @@ final class EventController {
             let user = try req.requireAuthenticated(Private.User.self)
             
             return req.transaction(on: .sqlite) { conn -> EventLoopFuture<Private.Event> in
-                return createEvent.periods.map { $0.toPrivate().save(on: conn) }
+                return createEvent.periodArray.map { $0.toPrivate().save(on: conn) }
                     .flatten(on: conn)
                     .flatMap { periods in
                         return createEvent.comment.toPrivate(personId: user.id!).save(on: conn).flatMap { note in
                             let periodIdArray = periods.map { $0.id! }
-                            return createEvent.toPrivate(personId: user.id!, periodIdArray: periodIdArray).save(on: conn)
+                            return createEvent.toPrivate(personId: user.id!, periodIdArray: periodIdArray, noteId: note.id!).save(on: conn)
                     }
                 }
             }
@@ -39,15 +39,15 @@ final class EventController {
 
 struct CreateEventRequest: Content {
     var title: String
-    var periods: [Period]
+    var periodArray: [Period]
     var maxPersons: Int?
     var categoryId: Int
     var points: Int
     var comment: Note
 //    var photos: Private.Photo
     
-    func toPrivate(personId: Int, periodIdArray: [Int]) -> Private.Event {
-        return Private.Event(title: title, periodIdArray: periodIdArray, maxPersons: maxPersons, categoryId: categoryId, ownerId: personId)
+    func toPrivate(personId: Int, periodIdArray: [Int], noteId: Int) -> Private.Event {
+        return Private.Event(title: title, periodIdArray: periodIdArray, maxPersons: maxPersons, categoryId: categoryId, ownerId: personId, noteIdArray: [noteId])
     }
     
     struct Period: Content {

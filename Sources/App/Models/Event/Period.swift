@@ -8,6 +8,14 @@
 import FluentSQLite
 import Vapor
 
+extension Public {
+    struct Period: Content {
+        var id: Int
+        var startDate: Date
+        var endDate: Date
+    }
+}
+
 extension Private {
     final class Period: SQLiteModel {
         var id: Int?
@@ -18,6 +26,10 @@ extension Private {
             self.id = id
             self.startDate = startDate
             self.endDate = endDate
+        }
+        
+        func toPublic() -> Public.Period {
+            return Public.Period(id: id!, startDate: startDate, endDate: endDate)
         }
     }
 }

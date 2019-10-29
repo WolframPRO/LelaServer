@@ -9,6 +9,15 @@
 import FluentSQLite
 import Vapor
 
+extension Public {
+    struct Category: Content {
+        var id: Int
+        
+        var title: String
+        var iconId: String?
+    }
+}
+
 extension Private {
     final class Category: SQLiteModel {
         
@@ -17,7 +26,7 @@ extension Private {
         var title: String
         var iconId: String?
         
-        var events: Children<Category, Event> {
+        var eventArray: Children<Category, Event> {
             return children(\.categoryId)
         }
 
@@ -25,6 +34,10 @@ extension Private {
             self.id = id
             self.title = title
             self.iconId = iconId
+        }
+        
+        func toPublic() -> Public.Category {
+            return Public.Category(id: id!, title: title, iconId: iconId)
         }
     }
 }

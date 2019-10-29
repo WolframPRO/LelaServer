@@ -9,6 +9,15 @@
 import FluentSQLite
 import Vapor
 
+extension Public {
+    struct Photo: Content {
+        var id: Int
+    //    let image: CGImage
+        var description: String?
+        var personId: Int
+    }
+}
+
 final class Photo: SQLiteModel {
     var id: Int?
 //    let image: CGImage
@@ -19,6 +28,10 @@ final class Photo: SQLiteModel {
         self.id = id
         self.description = description
         self.personId = personId
+    }
+    
+    func toPublic() -> Public.Photo {
+        return Public.Photo(id: id!, description: description, personId: personId)
     }
 }
 
