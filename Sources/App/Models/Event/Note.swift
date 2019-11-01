@@ -12,6 +12,7 @@ import Vapor
 extension Public {
     struct Note: Content {
         var id: Int
+        var eventId: Int
         var number: Int
         var theme: String?
         var text: String
@@ -27,6 +28,7 @@ extension Private {
     final class Note: SQLiteModel {
         
         var id: Int?
+        var eventId: Int
         var number: Int
         var theme: String?
         var text: String
@@ -37,8 +39,9 @@ extension Private {
         var attachmentId: Int?
         
         
-        init(id: Int?, number: Int, theme: String?, text: String, time: Date, personId: Int, isAnonimus: Bool, attachmentId: Int?) {
+        init(id: Int?, eventId: Int, number: Int, theme: String?, text: String, time: Date, personId: Int, isAnonimus: Bool, attachmentId: Int?) {
             self.id = id
+            self.eventId = eventId
             self.number = number
             self.theme = theme
             self.text = text
@@ -49,7 +52,7 @@ extension Private {
         }
         
         func toPublic() -> Public.Note {
-            return Public.Note(id: id!, number: number, theme: theme, text: text, time: time, personId: personId, isAnonimus: isAnonimus)
+            return Public.Note(id: id!, eventId: eventId, number: number, theme: theme, text: text, time: time, personId: personId, isAnonimus: isAnonimus)
         }
         
     }

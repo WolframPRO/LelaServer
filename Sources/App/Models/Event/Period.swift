@@ -11,6 +11,7 @@ import Vapor
 extension Public {
     struct Period: Content {
         var id: Int
+        var eventId: Int
         var startDate: Date
         var endDate: Date
     }
@@ -19,17 +20,19 @@ extension Public {
 extension Private {
     final class Period: SQLiteModel {
         var id: Int?
+        var eventId: Int
         var startDate: Date
         var endDate: Date
         
-        init(id: Int? = nil, startDate: Date, endDate: Date) {
+        init(id: Int? = nil, eventId: Int, startDate: Date, endDate: Date) {
             self.id = id
+            self.eventId = eventId
             self.startDate = startDate
             self.endDate = endDate
         }
         
         func toPublic() -> Public.Period {
-            return Public.Period(id: id!, startDate: startDate, endDate: endDate)
+            return Public.Period(id: id!, eventId: eventId, startDate: startDate, endDate: endDate)
         }
     }
 }

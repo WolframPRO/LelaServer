@@ -34,9 +34,8 @@ extension Private {
         var points: Int
         var maxPersons: Int? //max people
         
-        var periodIdArray: [Int]
         var periodArray: Children<Event, Period> {
-            return children(\.id)
+            return children(\.eventId)
         }
         
         var categoryId: Int
@@ -49,53 +48,70 @@ extension Private {
             return parent(\.ownerId)
         }
         
-        var partIdArray: [Int]
         var partArray: Children<Event, Part> {
-            return children(\.id)
+            return children(\.eventId)
         }
         
-        var noteIdArray: [Int]
         var noteArray: Children<Event, Note> {
-            return children(\.id)
+            return children(\.eventId)
         }
         
-        var photoIdArray: [Int]
         var photoArray: Children<Event, Photo> {
-            return children(\.id)
+            return children(\.eventId)
         }
         
-        init(id: Int? = nil, title: String, points: Int = 0, periodIdArray: [Int], maxPersons: Int?, categoryId: Int, ownerId: Int, partIdArray: [Int] = [], noteIdArray: [Int] = [], photoIdArray: [Int] = []) {
+        init(id: Int? = nil, title: String, points: Int = 0, maxPersons: Int?, categoryId: Int, ownerId: Int) {
             self.id = id
             self.title = title
             self.points = points
-            self.periodIdArray = periodIdArray
             self.maxPersons = maxPersons
             self.categoryId = categoryId
             self.ownerId = ownerId
-            self.partIdArray = partIdArray
-            self.noteIdArray = noteIdArray
-            self.photoIdArray = photoIdArray
         }
         
-        func toPublicFuture(conn: DatabaseConnectable) throws -> EventLoopFuture<Public.Event> {
-            return try periodArray.query(on: conn).all().flatMap {[unowned self] periods in
+        func toPublicFuture(conn: DatabaseConnectable) throws -> Future<Public.Event> {
+            return try periodArray.query(on: conn).all().flatMap { periods in
                 let periods = periods.map { $0.toPublic() }
-                return try self.partArray.query(on: conn).all().flatMap {[unowned self] parts in
+                return try self.partArray.query(on: conn).all().flatMap { parts in
                     let parts = parts.map { $0.toPublic() }
-                    return try self.noteArray.query(on: conn).all().flatMap {[unowned self] notes in
+                    return try self.noteArray.query(on: conn).all().flatMap { notes in
                         let notes = notes.map { $0.toPublic() }
-                        return try self.photoArray.query(on: conn).all().flatMap { photos in
+                        return try self.photoArray.query(on: conn).all().map { photos in
                             let photos = photos.map { $0.toPublic() }
-                            return Public.Event(id: id!, title: title, points: points, maxPersons: maxPersons, periodArray: periods, categoryId: categoryId, ownerId: ownerId, partArray: parts, noteArray: notes, photoArray: photos)
+                            return Public.Event(id: self.id!, title: self.title, points: self.points, maxPersons: self.maxPersons, periodArray: periods, categoryId: self.categoryId, ownerId: self.ownerId, partArray: parts, noteArray: notes, photoArray: photos)
                         }
                     }
                 }
             }
-            
         }
+        
+        func change(_ params: ChangeEventRequest) -> Event {
+            self.title      = params.title
+            self.points     = params.points
+            self.maxPersons = params.maxPersons
+            
+            self.categoryId = params.categoryId
+            self.ownerId    = params.ownerId
+            
+            return self
+        }
+        
     }
 }
 
-extension Private.Event: Migration { }
+extension Private.Event: Migration {
+    static func prepare(on conn: SQLiteConnection) -> Future<Void> {
+        return SQLiteDatabase.create(Private.Event.self, on: conn) { builder in
+            builder.field(for: \.id, isIdentifier: true)
+            builder.field(for: \.title)
+            builder.field(for: \.points)
+            builder.field(for: \.maxPersons)
+            builder.field(for: \.categoryId)
+            builder.field(for: \.ownerId)
+            builder.reference(from: \.categoryId, to: \Private.Category.id, onUpdate: ._noAction, onDelete: ._noAction)
+            builder.reference(from: \.ownerId, to: \Private.User.id, onUpdate: ._noAction, onDelete: ._noAction)
+        }
+    }
+}
 extension Private.Event: Content { }
 extension Private.Event: Parameter { }

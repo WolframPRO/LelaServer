@@ -47,6 +47,17 @@ extension Private {
     }
 }
 
-extension Private.Part: Migration { }
+extension Private.Part: Migration {
+    static func prepare(on conn: SQLiteConnection) -> Future<Void> {
+        return SQLiteDatabase.create(Private.Part.self, on: conn) { builder in
+            builder.field(for: \.id, isIdentifier: true)
+            builder.field(for: \.confirmed)
+            builder.field(for: \.userId)
+            builder.field(for: \.eventId)
+            builder.reference(from: \.userId, to: \Private.User.id, onUpdate: ._noAction, onDelete: ._noAction)
+            builder.reference(from: \.eventId, to: \Private.Event.id, onUpdate: ._noAction, onDelete: ._noAction)
+        }
+    }
+}
 extension Private.Part: Content { }
 extension Private.Part: Parameter { }

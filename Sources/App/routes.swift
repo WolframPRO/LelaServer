@@ -21,7 +21,7 @@ public func routes(_ router: Router) throws {
     
     // bearer / token auth protected routes
     let bearer = v1.grouped(Private.User.tokenAuthMiddleware())
-    bearer.post("change", use: userController.change)
+    bearer.put("change", use: userController.change)
     
     let categoryRouter = bearer.grouped("category")
     let categoryController = CategoryController()
@@ -32,7 +32,9 @@ public func routes(_ router: Router) throws {
     let eventRouter = bearer.grouped("event")
     let eventController = EventController()
     eventRouter.get("list", use: eventController.list)
+    eventRouter.get("index", use: eventController.index)
     eventRouter.post("add", use: eventController.create)
+    eventRouter.put("change", use: eventController.change)
     eventRouter.delete("delete", use: eventController.delete)
     
     let todoController = TodoController()

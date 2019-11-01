@@ -12,6 +12,7 @@ import Vapor
 extension Public {
     struct Photo: Content {
         var id: Int
+        var eventId: Int
     //    let image: CGImage
         var description: String?
         var personId: Int
@@ -20,18 +21,20 @@ extension Public {
 
 final class Photo: SQLiteModel {
     var id: Int?
+    var eventId: Int
 //    let image: CGImage
     var description: String?
     var personId: Int
     
-    internal init(id: Int?, description: String?, personId: Int) {
+    internal init(id: Int?, eventId: Int, description: String?, personId: Int) {
         self.id = id
+        self.eventId = eventId
         self.description = description
         self.personId = personId
     }
     
     func toPublic() -> Public.Photo {
-        return Public.Photo(id: id!, description: description, personId: personId)
+        return Public.Photo(id: id!, eventId: eventId, description: description, personId: personId)
     }
 }
 
