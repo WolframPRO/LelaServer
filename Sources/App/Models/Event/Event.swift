@@ -56,7 +56,7 @@ extension Private {
             return children(\.eventId)
         }
         
-        var photoArray: Children<Event, Photo> {
+        var photoArray: Children<Event, Private.Photo> {
             return children(\.eventId)
         }
         

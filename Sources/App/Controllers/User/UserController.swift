@@ -40,15 +40,15 @@ final class UserController {
 
 extension UserController {
     
-    func change(_ req: Request) throws -> Future<UserForClient> {
+    func change(_ req: Request) throws -> Future<Public.User> {
         // fetch auth'd user
         let user = try req.requireAuthenticated(Private.User.self)
         
         // decode request content
-        return try req.content.decode(UserForClient.self).flatMap { userForClient in
+        return try req.content.decode(Public.User.self).flatMap { userForClient in
             // save new todo
             return user.change(with: userForClient)
-                .save(on: req).map({ (user) -> (UserForClient) in
+                .save(on: req).map({ (user) -> (Public.User) in
                     return user.forClient()
                 })
         }
@@ -59,7 +59,7 @@ extension UserController {
 // MARK: Content
 
 struct LoginResponce: Content {
-    var user: UserForClient
+    var user: Public.User
     var token: Private.UserToken
 }
 

@@ -2,39 +2,40 @@ import Authentication
 import FluentSQLite
 import Vapor
 
-
-struct UserForClient: Content {
-    var id: Int?
-    
-    /// User's full name.
-    var avatarURL: String?
-    var name: String?
-    var surname: String?
-    var birthday: String?
-    
-    var balance: Int
-    var points: Int
-    
-    /// User's email address.
-    var email: String
-    var registerDate: Date
-    var role: Int
-    var orgInfo: String
-    
-    init(user: Private.User){
-        self.id            = user.id
-        self.avatarURL     = user.avatarURL
-        self.name          = user.name
-        self.surname       = user.surname
-        self.birthday      = user.birthday
-        self.balance       = user.balance
-        self.points        = user.points
-        self.email         = user.email
-        self.registerDate  = user.registerDate
-        self.role          = user.role
-        self.orgInfo       = user.orgInfo
+extension Public {
+    struct User: Content {
+        var id: Int?
+        
+        /// User's full name.
+        var avatarURL: String?
+        var name: String?
+        var surname: String?
+        var birthday: String?
+        
+        var balance: Int
+        var points: Int
+        
+        /// User's email address.
+        var email: String
+        var registerDate: Date
+        var role: Int
+        var orgInfo: String
+        
+        init(user: Private.User){
+            self.id            = user.id
+            self.avatarURL     = user.avatarURL
+            self.name          = user.name
+            self.surname       = user.surname
+            self.birthday      = user.birthday
+            self.balance       = user.balance
+            self.points        = user.points
+            self.email         = user.email
+            self.registerDate  = user.registerDate
+            self.role          = user.role
+            self.orgInfo       = user.orgInfo
+        }
+        
     }
-    
 }
 
 extension Private {
@@ -93,7 +94,7 @@ extension Private {
         }
         
         /// sudo Change user
-        func sudoChange(with clientUser: UserForClient) -> User {
+        func sudoChange(with clientUser: Public.User) -> User {
             
             self.balance        = clientUser.balance
             self.points         = clientUser.points
@@ -107,7 +108,7 @@ extension Private {
         }
         
         /// Change user
-        func change(with clientUser: UserForClient) -> User {
+        func change(with clientUser: Public.User) -> User {
             
             self.avatarURL  = clientUser.avatarURL
             self.name       = clientUser.name
@@ -117,8 +118,8 @@ extension Private {
             return self
         }
         
-        func forClient() -> UserForClient {
-            return UserForClient(user: self)
+        func forClient() -> Public.User {
+            return Public.User(user: self)
         }
     }
 }

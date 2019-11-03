@@ -55,6 +55,13 @@ extension Private {
             return Public.Note(id: id!, eventId: eventId, number: number, theme: theme, text: text, time: time, personId: personId, isAnonimus: isAnonimus)
         }
         
+        func change(_ params: ChangeNoteRequest) -> Note {
+            self.theme = params.theme
+            self.text = params.text
+            self.isAnonimus = params.isAnonimus
+            return self
+        }
+        
     }
 }
 

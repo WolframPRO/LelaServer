@@ -18,7 +18,7 @@ final class EventController {
                 return createEvent.toPrivate(personId: user.id!).save(on: conn).flatMap { event in
                     
                     _ = createEvent.periodArray.map { $0.toPrivate(eventId: event.id!).save(on: conn) }
-                    _ = createEvent.comment.toPrivate(personId: user.id!, eventId: event.id!).save(on: conn)
+                    _ = createEvent.note.toPrivate(personId: user.id!, eventId: event.id!).save(on: conn)
                     
                     return try event.toPublicFuture(conn: conn)
                 }
@@ -66,7 +66,7 @@ struct CreateEventRequest: Content {
     var maxPersons: Int?
     var categoryId: Int
     var points: Int
-    var comment: Note
+    var note: Note
 //    var photos: Private.Photo
     
     func toPrivate(personId: Int) -> Private.Event {

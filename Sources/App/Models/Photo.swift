@@ -19,25 +19,27 @@ extension Public {
     }
 }
 
-final class Photo: SQLiteModel {
-    var id: Int?
-    var eventId: Int
-//    let image: CGImage
-    var description: String?
-    var personId: Int
-    
-    internal init(id: Int?, eventId: Int, description: String?, personId: Int) {
-        self.id = id
-        self.eventId = eventId
-        self.description = description
-        self.personId = personId
-    }
-    
-    func toPublic() -> Public.Photo {
-        return Public.Photo(id: id!, eventId: eventId, description: description, personId: personId)
+extension Private {
+    final class Photo: SQLiteModel {
+        var id: Int?
+        var eventId: Int
+    //    let image: CGImage
+        var description: String?
+        var personId: Int
+        
+        internal init(id: Int?, eventId: Int, description: String?, personId: Int) {
+            self.id = id
+            self.eventId = eventId
+            self.description = description
+            self.personId = personId
+        }
+        
+        func toPublic() -> Public.Photo {
+            return Public.Photo(id: id!, eventId: eventId, description: description, personId: personId)
+        }
     }
 }
 
-extension Photo: Migration { }
-extension Photo: Content { }
-extension Photo: Parameter { }
+extension Private.Photo: Migration { }
+extension Private.Photo: Content { }
+extension Private.Photo: Parameter { }
