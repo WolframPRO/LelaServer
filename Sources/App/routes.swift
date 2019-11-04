@@ -26,14 +26,14 @@ public func routes(_ router: Router) throws {
     let categoryRouter = bearer.grouped("category")
     let categoryController = CategoryController()
     categoryRouter.get("list",      use: categoryController.list)
-    categoryRouter.post("add",      use: categoryController.create)
+    categoryRouter.post("create",   use: categoryController.create)
     categoryRouter.delete("delete", use: categoryController.delete)
     
     let eventRouter = bearer.grouped("event")
     let eventController = EventController()
     eventRouter.get("list",         use: eventController.list)
     eventRouter.get("index",        use: eventController.index)
-    eventRouter.post("add",         use: eventController.create)
+    eventRouter.post("create",      use: eventController.create)
     eventRouter.put("change",       use: eventController.change)
     eventRouter.delete("delete",    use: eventController.delete)
     
@@ -41,7 +41,7 @@ public func routes(_ router: Router) throws {
     let noteController = NoteController()
     noteRouter.get("list",          use: noteController.list)
     noteRouter.get("index",         use: noteController.index)
-    noteRouter.post("add",          use: noteController.create)
+    noteRouter.post("create",       use: noteController.create)
     noteRouter.put("change",        use: noteController.change)
     noteRouter.delete("delete",     use: noteController.delete)
     
@@ -49,7 +49,7 @@ public func routes(_ router: Router) throws {
     let partController = PartController()
     partRouter.get("list",          use: partController.list)
     partRouter.get("index",         use: partController.index)
-    partRouter.post("add",          use: partController.create)
+    partRouter.post("create",       use: partController.create)
     partRouter.put("confirm",       use: partController.confirm)
     partRouter.delete("delete",     use: partController.delete)
 }

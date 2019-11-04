@@ -37,7 +37,7 @@ final class PartController {
     }
     
     func index(_ req: Request) throws -> Future<Public.Part> {
-        return try req.content.decode(IndexEventRequest.self).flatMap { params in
+        return try req.content.decode(IndexPartRequest.self).flatMap { params in
             return Private.Part.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.notFound))
                 .map { $0.toPublic() }
@@ -55,7 +55,7 @@ final class PartController {
     }
 
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
-        return try req.content.decode(DeleteEventRequest.self).flatMap { params in
+        return try req.content.decode(DeletePartRequest.self).flatMap { params in
             return Private.Part.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.alreadyReported))
                 .delete(on: req)

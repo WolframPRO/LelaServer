@@ -85,7 +85,7 @@ extension Private {
             }
         }
         
-        func change(_ params: ChangeEventRequest) -> Event {
+        func change(_ params: Requests.Event.Change) -> Event {
             self.title      = params.title
             self.points     = params.points
             self.maxPersons = params.maxPersons

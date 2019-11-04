@@ -48,7 +48,7 @@ final class NoteController {
     }
     
     func index(_ req: Request) throws -> Future<Public.Note> {
-        return try req.content.decode(IndexEventRequest.self).flatMap { params in
+        return try req.content.decode(IndexNoteRequest.self).flatMap { params in
             return Private.Note.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.notFound))
                 .map { $0.toPublic() }
@@ -72,7 +72,7 @@ final class NoteController {
     }
 
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
-        return try req.content.decode(DeleteEventRequest.self).flatMap { params in
+        return try req.content.decode(DeleteNoteRequest.self).flatMap { params in
             return Private.Note.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.alreadyReported))
                 .delete(on: req)
