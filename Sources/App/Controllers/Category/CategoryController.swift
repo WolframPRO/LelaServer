@@ -19,7 +19,7 @@ final class CategoryController {
     }
     
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
-        try req.content.decode(Requests.Category.Delete.self).flatMap { params in
+        return try req.content.decode(Requests.Category.Delete.self).flatMap { params in
             return Private.Category.find(params.id, on: req)
             .unwrap(or: Abort(HTTPResponseStatus.alreadyReported))
             .delete(on: req)
