@@ -13,15 +13,18 @@ public func routes(_ router: Router) throws {
     
     // public routes
     let userController = UserController()
-    v1.post("create",               use: userController.create)
+    v1.post("user/create",               use: userController.create)
     
     // basic / password auth protected routes
     let basic = v1.grouped(Private.User.basicAuthMiddleware(using: BCryptDigest()))
-    basic.post("login",             use: userController.login)
+    basic.post("user/login",             use: userController.login)
     
     // bearer / token auth protected routes
     let bearer = v1.grouped(Private.User.tokenAuthMiddleware())
-    bearer.put("change",            use: userController.change)
+    
+    let userRouter = bearer.grouped("user")
+    userRouter.put("change",        use: userController.change)
+    userRouter.get("index",         use: userController.index)
     
     let categoryRouter = bearer.grouped("category")
     let categoryController = CategoryController()
