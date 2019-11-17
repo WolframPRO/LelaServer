@@ -70,11 +70,11 @@ extension Requests {
     class Event {
         struct Create: Content {
             var title: String
-            var periodArray: [Period]
+            var periodArray: [Body.Period]
             var maxPersons: Int?
             var categoryId: Int
             var points: Int
-            var note: Note
+            var note: Body.Note
         //    var photos: Private.Photo
             
             func toPrivate(personId: Int) -> Private.Event {
@@ -87,7 +87,7 @@ extension Requests {
             var title: String
             var points: Int
             var maxPersons: Int? //max people
-            var periodArray: [Period]
+            var periodArray: [Body.Period]
             
             var categoryId: Int
             var ownerId: Int
@@ -101,35 +101,36 @@ extension Requests {
         struct Index: Content {
             var id: Int
         }
-    }
-}
+        
+        class Body {
+            struct Period: Content {
+                var startDate: Date
+                var endDate: Date
+                
+                func toPrivate(eventId: Int) -> Private.Period {
+                    return Private.Period(eventId: eventId, startDate: startDate, endDate: endDate)
+                }
+            }
 
-
-struct Period: Content {
-    var startDate: Date
-    var endDate: Date
-    
-    func toPrivate(eventId: Int) -> Private.Period {
-        return Private.Period(eventId: eventId, startDate: startDate, endDate: endDate)
-    }
-}
-
-struct Note: Content {
-    var theme: String?
-    var text: String
-    var isAnonimus: Bool
-    
-    var attachmentId: Int?
-    
-    func toPrivate(personId: Int, eventId: Int) -> Private.Note {
-        return Private.Note(id: nil,
-                            eventId: eventId,
-                            number: 0,
-                            theme: theme,
-                            text: text,
-                            time: Date(),
-                            personId: personId,
-                            isAnonimus: isAnonimus,
-                            attachmentId: nil)
+            struct Note: Content {
+                var theme: String?
+                var text: String
+                var isAnonimus: Bool
+                
+                var attachmentId: Int?
+                
+                func toPrivate(personId: Int, eventId: Int) -> Private.Note {
+                    return Private.Note(id: nil,
+                                        eventId: eventId,
+                                        number: 0,
+                                        theme: theme,
+                                        text: text,
+                                        time: Date(),
+                                        personId: personId,
+                                        isAnonimus: isAnonimus,
+                                        attachmentId: nil)
+                }
+            }
+        }
     }
 }

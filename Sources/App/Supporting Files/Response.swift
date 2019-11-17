@@ -7,6 +7,6 @@
 
 import Foundation
 
-class Responce {
-    
+class Response {
+
 }

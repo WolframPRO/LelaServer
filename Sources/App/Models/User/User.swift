@@ -4,7 +4,7 @@ import Vapor
 
 extension Public {
     struct User: Content {
-        var id: Int?
+        var id: Int
         
         /// User's full name.
         var avatarURL: String?
@@ -20,20 +20,6 @@ extension Public {
         var registerDate: Date
         var role: Int
         var orgInfo: String
-        
-        init(user: Private.User){
-            self.id            = user.id
-            self.avatarURL     = user.avatarURL
-            self.name          = user.name
-            self.surname       = user.surname
-            self.birthday      = user.birthday
-            self.balance       = user.balance
-            self.points        = user.points
-            self.email         = user.email
-            self.registerDate  = user.registerDate
-            self.role          = user.role
-            self.orgInfo       = user.orgInfo
-        }
         
     }
 }
@@ -93,6 +79,20 @@ extension Private {
             self.passwordHash = passwordHash
         }
         
+        func toPublic() -> Public.User {
+            return Public.User(id: id!,
+                               avatarURL: avatarURL,
+                               name: name,
+                               surname: surname,
+                               birthday: birthday,
+                               balance: balance,
+                               points: points,
+                               email: email,
+                               registerDate: registerDate,
+                               role: role,
+                               orgInfo: orgInfo)
+        }
+        
         /// sudo Change user
         func sudoChange(with clientUser: Public.User) -> User {
             
@@ -116,10 +116,6 @@ extension Private {
             self.birthday   = clientUser.birthday
             
             return self
-        }
-        
-        func forClient() -> Public.User {
-            return Public.User(user: self)
         }
     }
 }

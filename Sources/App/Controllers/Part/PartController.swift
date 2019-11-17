@@ -11,7 +11,7 @@ import FluentSQLite
 final class PartController {
     
     func create(_ req: Request) throws -> Future<Public.Part> {
-        return try req.content.decode(CreatePartRequest.self).flatMap{ params in
+        return try req.content.decode(Requests.Part.Create.self).flatMap{ params in
             return Private.Event.find(params.eventId, on: req)
             .unwrap(or: Abort(HTTPResponseStatus.notFound))
             .flatMap { event in
@@ -26,7 +26,7 @@ final class PartController {
     }
     
     func confirm(_ req: Request) throws -> Future<Public.Part> {
-        return try req.content.decode(ConfirmPartRequest.self).flatMap { params in
+        return try req.content.decode(Requests.Part.Confirm.self).flatMap { params in
             return Private.Part.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.notFound))
                 .flatMap { part in
@@ -37,7 +37,7 @@ final class PartController {
     }
     
     func index(_ req: Request) throws -> Future<Public.Part> {
-        return try req.content.decode(IndexPartRequest.self).flatMap { params in
+        return try req.content.decode(Requests.Part.Index.self).flatMap { params in
             return Private.Part.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.notFound))
                 .map { $0.toPublic() }
@@ -45,7 +45,7 @@ final class PartController {
     }
     
     func list(_ req: Request) throws -> Future<[Public.Part]> {
-        return try req.content.decode(ListPartForEvent.self).flatMap { params in
+        return try req.content.decode(Requests.Part.ListForEvent.self).flatMap { params in
             return Private.Event.find(params.eventId, on: req)
             .unwrap(or: Abort(HTTPResponseStatus.notFound))
             .flatMap { event in
@@ -55,7 +55,7 @@ final class PartController {
     }
 
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
-        return try req.content.decode(DeletePartRequest.self).flatMap { params in
+        return try req.content.decode(Requests.Part.Delete.self).flatMap { params in
             return Private.Part.find(params.id, on: req)
                 .unwrap(or: Abort(HTTPResponseStatus.alreadyReported))
                 .delete(on: req)
@@ -63,26 +63,31 @@ final class PartController {
     }
 }
 
-struct ListPartForEvent: Content {
-    var eventId: Int
+extension Requests {
+    class Part {
+        struct ListForEvent: Content {
+            var eventId: Int
+        }
+
+        struct Create: Content {
+            var userId: Int
+            var eventId: Int
+        }
+
+        struct Confirm: Content {
+            var id: Int
+            var confirmed: Bool
+        }
+
+
+        struct Delete: Content {
+            var id: Int
+        }
+
+        struct Index: Content {
+            var id: Int
+        }
+    }
 }
 
-struct CreatePartRequest: Content {
-    var userId: Int
-    var eventId: Int
-}
-
-struct ConfirmPartRequest: Content {
-    var id: Int
-    var confirmed: Bool
-}
-
-
-struct DeletePartRequest: Content {
-    var id: Int
-}
-
-struct IndexPartRequest: Content {
-    var id: Int
-}
 
