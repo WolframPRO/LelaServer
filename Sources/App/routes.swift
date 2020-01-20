@@ -25,6 +25,7 @@ public func routes(_ router: Router) throws {
     let userRouter = bearer.grouped("user")
     userRouter.put("change",        use: userController.change)
     userRouter.get("index",         use: userController.index)
+    userRouter.get("list",          use: userController.list)
     
     let categoryRouter = bearer.grouped("category")
     let categoryController = CategoryController()

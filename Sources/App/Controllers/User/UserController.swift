@@ -62,6 +62,9 @@ extension UserController {
         }
     }
     
+    func list(_ req: Request) throws -> Future<[Public.User]> {
+        return Private.User.query(on: req).all().map { $0.map { $0.toPublic() } }
+    }
 }
 
 // MARK: Content
