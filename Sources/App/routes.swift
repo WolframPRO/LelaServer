@@ -23,6 +23,7 @@ public func routes(_ router: Router) throws {
     let bearer = v1.grouped(Private.User.tokenAuthMiddleware())
     
     let userRouter = bearer.grouped("user")
+    userRouter.put("change/sudo",        use: userController.sudoChange)
     userRouter.put("change",        use: userController.change)
     userRouter.get("index",         use: userController.index)
     userRouter.get("list",          use: userController.list)
@@ -56,4 +57,12 @@ public func routes(_ router: Router) throws {
     partRouter.post("create",       use: partController.create)
     partRouter.put("confirm",       use: partController.confirm)
     partRouter.delete("delete",     use: partController.delete)
+    
+    let awardRouter = bearer.grouped("award")
+    
+    let awardOfficeRouter = awardRouter.grouped("office")
+    let awardOfficeController = AwardOfficeController()
+    awardOfficeRouter.get("list",      use: awardOfficeController.list)
+    awardOfficeRouter.post("create",   use: awardOfficeController.create)
+    awardOfficeRouter.delete("delete", use: awardOfficeController.delete)
 }

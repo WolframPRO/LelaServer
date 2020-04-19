@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 enum Access: Int {
     
     case modifyCategory = 0b1000000

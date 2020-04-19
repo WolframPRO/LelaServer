@@ -12,8 +12,13 @@ final class AwardOfficeController {
 
     func create(_ req: Request) throws -> Future<Private.AwardOffice> {
         let user = try req.requireAuthenticated(Private.User.self)
-        if user.role & 0b000000001 == 0 {}
-        return try req.content.decode(Private.AwardOffice.self).flatMap { $0.save(on: req) }
+        guard Access.modifyAward.available(user.role) else {
+            throw Abort.init(.methodNotAllowed)
+        }
+        
+        return try req.content.decode(Private.AwardOffice.self).flatMap { office in
+            return office.save(on: req)
+        }
     }
 
     func list(_ req: Request) throws -> Future<[Private.AwardOffice]> {
@@ -21,8 +26,13 @@ final class AwardOfficeController {
     }
 
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
+        let user = try req.requireAuthenticated(Private.User.self)
+        guard Access.modifyAward.available(user.role) else {
+            throw Abort.init(.methodNotAllowed)
+        }
+        
         return try req.content.decode(Requests.AwardOffice.Delete.self).flatMap { params in
-            return Private.Category.find(params.id, on: req)
+            return Private.AwardOffice.find(params.id, on: req)
             .unwrap(or: Abort(HTTPResponseStatus.alreadyReported))
             .delete(on: req)
         }.transform(to: .ok)

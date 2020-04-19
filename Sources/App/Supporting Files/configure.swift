@@ -47,6 +47,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
                    database: DatabaseIdentifier<Private.Part.Database>.sqlite)
     migrations.add(model: Private.Photo.self,
                    database: DatabaseIdentifier<Private.Photo.Database>.sqlite)
+    migrations.add(model: Private.AwardOffice.self,
+                   database: DatabaseIdentifier<Private.AwardOffice.Database>.sqlite)
     services.register(migrations)
 
 }

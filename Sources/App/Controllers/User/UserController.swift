@@ -40,6 +40,20 @@ final class UserController {
 
 extension UserController {
     
+    func sudoChange(_ req: Request) throws -> Future<Public.User> {
+        // fetch auth'd user
+        let user = try req.requireAuthenticated(Private.User.self)
+        
+        // decode request content
+        return try req.content.decode(Public.User.self).flatMap { userForClient in
+            // save new todo
+            return user.sudoChange(with: userForClient)
+                .save(on: req).map({ (user) -> (Public.User) in
+                    return user.toPublic()
+                })
+        }
+    }
+    
     func change(_ req: Request) throws -> Future<Public.User> {
         // fetch auth'd user
         let user = try req.requireAuthenticated(Private.User.self)
