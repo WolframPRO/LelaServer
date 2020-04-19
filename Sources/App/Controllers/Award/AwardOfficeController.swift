@@ -10,19 +10,19 @@ import FluentSQLite
 
 final class AwardOfficeController {
 
-    func create(_ req: Request) throws -> Future<Private.AwardOffice> {
+    func create(_ req: Request) throws -> Future<Public.AwardOffice> {
         let user = try req.requireAuthenticated(Private.User.self)
         guard Access.modifyAward.available(user.role) else {
             throw Abort.init(.methodNotAllowed)
         }
         
         return try req.content.decode(Private.AwardOffice.self).flatMap { office in
-            return office.save(on: req)
+            return office.save(on: req).map { $0.toPublic() }
         }
     }
 
-    func list(_ req: Request) throws -> Future<[Private.AwardOffice]> {
-        return Private.AwardOffice.query(on: req).all()
+    func list(_ req: Request) throws -> Future<[Public.AwardOffice]> {
+        return Private.AwardOffice.query(on: req).all().map { $0.map { $0.toPublic() } }
     }
 
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
