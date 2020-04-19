@@ -16,6 +16,6 @@ enum Access: Int {
     case manageUserRole = 0b0001000
     
     func available(_ value: Int) -> Bool {
-        value & self.rawValue != 0
+        return value & self.rawValue != 0
     }
 }
