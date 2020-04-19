@@ -12,7 +12,7 @@ final class AwardOfficeController {
 
     func create(_ req: Request) throws -> Future<Private.AwardOffice> {
         let user = try req.requireAuthenticated(Private.User.self)
-        if user.role == 1 {}
+        if user.role & 0b000000001 == 0 {}
         return try req.content.decode(Private.AwardOffice.self).flatMap { $0.save(on: req) }
     }
 
