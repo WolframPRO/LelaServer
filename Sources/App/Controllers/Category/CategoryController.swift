@@ -28,7 +28,7 @@ final class CategoryController {
 }
 
 extension Requests {
-    class Category {
+    class Award {
         struct Delete: Content {
             var id: Int
         }

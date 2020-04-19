@@ -31,14 +31,22 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     /// Configure migrations
     var migrations = MigrationConfig()
-    migrations.add(model: Private.User.self, database: .sqlite)
-    migrations.add(model: Private.UserToken.self, database: .sqlite)
-    migrations.add(model: Private.Category.self, database: .sqlite)
-    migrations.add(model: Private.Event.self, database: .sqlite)
-    migrations.add(model: Private.Note.self, database: .sqlite)
-    migrations.add(model: Private.Period.self, database: .sqlite)
-    migrations.add(model: Private.Part.self, database: .sqlite)
-    migrations.add(model: Private.Photo.self, database: .sqlite)
+    migrations.add(model: Private.User.self,
+                   database: DatabaseIdentifier<Private.User.Database>.sqlite)
+    migrations.add(model: Private.UserToken.self,
+                   database: DatabaseIdentifier<Private.UserToken.Database>.sqlite)
+    migrations.add(model: Private.Category.self,
+                   database: DatabaseIdentifier<Private.Category.Database>.sqlite)
+    migrations.add(model: Private.Event.self,
+                   database: DatabaseIdentifier<Private.Event.Database>.sqlite)
+    migrations.add(model: Private.Note.self,
+                   database: DatabaseIdentifier<Private.Note.Database>.sqlite)
+    migrations.add(model: Private.Period.self,
+                   database: DatabaseIdentifier<Private.Period.Database>.sqlite)
+    migrations.add(model: Private.Part.self,
+                   database: DatabaseIdentifier<Private.Part.Database>.sqlite)
+    migrations.add(model: Private.Photo.self,
+                   database: DatabaseIdentifier<Private.Photo.Database>.sqlite)
     services.register(migrations)
 
 }
