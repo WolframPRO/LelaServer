@@ -29,6 +29,14 @@ extension Private {
         func toPublic() -> Public.AwardOffice {
             return Public.AwardOffice(id: id ?? -1, address: address, operatorFio: operatorFio, timetable: timetable)
         }
+        
+        func change(_ changeRequest: Requests.AwardOffice.Change) -> AwardOffice {
+            self.address = changeRequest.address
+            self.operatorFio = changeRequest.operatorFio
+            self.timetable = changeRequest.timetable
+            
+            return self
+        }
     }
 }
 

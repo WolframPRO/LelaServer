@@ -18,6 +18,13 @@ final class CategoryController {
         return Private.Category.query(on: req).all()
     }
     
+    func index(_ req: Request) throws -> Future<Private.Category> {
+        return try req.content.decode(Requests.Category.Index.self).flatMap { params in
+            return Private.Category.find(params.id, on: req)
+                .unwrap(or: Abort(HTTPResponseStatus.notFound))
+        }
+    }
+    
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
         return try req.content.decode(Requests.Category.Delete.self).flatMap { params in
             return Private.Category.find(params.id, on: req)
@@ -29,6 +36,9 @@ final class CategoryController {
 
 extension Requests {
     class Category {
+        struct Index: Content {
+            var id: Int
+        }
         struct Delete: Content {
             var id: Int
         }

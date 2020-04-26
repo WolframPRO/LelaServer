@@ -15,7 +15,7 @@ extension Public {
         var title: String
         var description: String
         var isAvailable: Bool
-        var price: Double
+        var price: Int
 
         var imageUrl: String?
     }
@@ -28,12 +28,22 @@ extension Private {
         var title: String
         var description: String
         var isAvailable: Bool
-        var price: Double
+        var price: Int
 
         var imageUrl: String?
 
         func toPublic() -> Public.AwardType {
             return Public.AwardType(id: id ?? -1, title: title, description: description, isAvailable: isAvailable, price: price, imageUrl: imageUrl)
+        }
+        
+        func change(_ changeRequest: Requests.AwardType.Change) -> AwardType {
+            self.title = changeRequest.title
+            self.description = changeRequest.description
+            self.isAvailable = changeRequest.isAvailable
+            self.price = changeRequest.price
+            self.imageUrl = changeRequest.imageUrl
+            
+            return self
         }
     }
 }

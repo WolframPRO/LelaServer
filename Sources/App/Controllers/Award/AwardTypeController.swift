@@ -14,25 +14,30 @@ final class AwardTypeController {
         return try req.content.decode(Private.AwardType.self).flatMap { $0.save(on: req) }
     }
     
-    func change(_ req: Request) throws -> Future<Public.Event> {
-        return try req.content.decode(Requests.Event.Change.self).flatMap { params in
-            return Private.Event.find(params.id, on: req)
+    func change(_ req: Request) throws -> Future<Public.AwardType> {
+        return try req.content.decode(Requests.AwardType.Change.self).flatMap { params in
+            return Private.AwardType.find(params.id, on: req)
             .unwrap(or: Abort(HTTPResponseStatus.notFound))
-                .flatMap { $0.change(params).save(on: req).flatMap { event in
-                    
-                    _ = try event.periodArray.query(on: req).all().map { periods in
-                        _ = periods.map { $0.delete(on: req) }
-                        _ = params.periodArray.map { $0.toPrivate(eventId: event.id!).save(on: req) }
-                    }
-                    
-                    return try event.toPublicFuture(conn: req)
+                .flatMap { $0.change(params).save(on: req).map { awardType in
+                    return awardType.toPublic()
                 }
             }
         }
     }
 
     func list(_ req: Request) throws -> Future<[Public.AwardType]> {
-        return Private.AwardType.query(on: req).all().map { $0.map { $0.toPublic() } }
+        return try req.content.decode(Requests.AwardType.List.self).flatMap { params in
+            let query = Private.AwardType.query(on: req).all()
+            return query.map { $0.filter { !params.availableOnly || $0.isAvailable }.map { $0.toPublic() } }
+        }
+    }
+    
+    func index(_ req: Request) throws -> Future<Public.AwardType> {
+        return try req.content.decode(Requests.AwardType.Index.self).flatMap { params in
+            return Private.AwardType.find(params.id, on: req)
+                .unwrap(or: Abort(HTTPResponseStatus.notFound))
+                .map { $0.toPublic() }
+        }
     }
     
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
@@ -46,8 +51,25 @@ final class AwardTypeController {
 
 extension Requests {
     class AwardType {
+        struct Index: Content {
+            var id: Int
+        }
         struct Delete: Content {
             var id: Int
+        }
+        struct Change: Content {
+            var id: Int
+            
+            var title: String
+            var description: String
+            var isAvailable: Bool
+            var price: Int
+
+            var imageUrl: String?
+        }
+        
+        struct List: Content {
+            var availableOnly: Bool
         }
     }
 }

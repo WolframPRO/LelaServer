@@ -13,7 +13,7 @@ extension Public {
         var id: Int?
         
         var typeId: Int
-        var ownerId: Int?
+        var ownerId: Int
         var operatorId: Int?
         
         ///0 - Free
@@ -23,7 +23,7 @@ extension Public {
         ///4 - Cancelled
         var status: Int
         
-        var priceFact: Double
+        var priceFact: Int
         var description: String
     }
 }
@@ -33,7 +33,7 @@ extension Private {
         var id: Int?
         
         var typeId: Int
-        var ownerId: Int?
+        var ownerId: Int
         var operatorId: Int?
         
         ///0 - Free
@@ -43,11 +43,35 @@ extension Private {
         ///4 - Cancelled
         var status: Int
         
-        var priceFact: Double
+        var priceFact: Int
         var description: String
         
+        init(type: AwardType, ownerId: Int) {
+            self.typeId = type.id ?? 0
+            self.ownerId = ownerId
+            self.status = 1
+            self.priceFact = type.price
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "HH:mm dd/MM/yyyy"
+            self.description = "\(type.description)\nНаграда создана: \(dateFormatter.string(from: Date()))"
+        }
+        
         func toPublic() -> Public.Award {
-            return Public.Award(id: id, typeId: typeId, ownerId: ownerId, operatorId: operatorId, status: status, priceFact: priceFact, description: description)
+            return Public.Award(id: id,
+                                typeId: typeId,
+                                ownerId: ownerId,
+                                operatorId: operatorId,
+                                status: status,
+                                priceFact: priceFact,
+                                description: description)
+        }
+        
+        func change(_ changeRequest: Requests.Award.Change) -> Award {
+            self.operatorId = changeRequest.operatorId
+            self.status = changeRequest.status
+            
+            return self
         }
     }
 }
@@ -67,12 +91,18 @@ extension Private.Award: Migration {
             builder.field(for: \.priceFact)
             builder.field(for: \.description)
             
-            builder.reference(from: \.typeId, to: \Private.AwardType.id,
-                              onUpdate: ._noAction, onDelete: ._cascade)
-            builder.reference(from: \.ownerId, to: \Private.User.id,
-                              onUpdate: ._noAction, onDelete: ._noAction)
-            builder.reference(from: \.operatorId, to: \Private.User.id,
-                              onUpdate: ._noAction, onDelete: ._noAction)
+            builder.reference(from: \.typeId,
+                              to: \Private.AwardType.id,
+                              onUpdate: ._noAction,
+                              onDelete: ._cascade)
+            builder.reference(from: \.ownerId,
+                              to: \Private.User.id,
+                              onUpdate: ._noAction,
+                              onDelete: ._noAction)
+            builder.reference(from: \.operatorId,
+                              to: \Private.User.id,
+                              onUpdate: ._noAction,
+                              onDelete: ._noAction)
         }
     }
 }
