@@ -59,10 +59,29 @@ public func routes(_ router: Router) throws {
     partRouter.delete("delete",     use: partController.delete)
     
     let awardRouter = bearer.grouped("award")
+    let awardController = AwardController()
+   awardRouter.get("list",      use: awardController.list)
+   awardRouter.post("create",   use: awardController.create)
+   awardRouter.delete("delete", use: awardController.delete)
+   awardRouter.get("index", use: awardController.index)
+   awardRouter.put("change", use: awardController.change)
     
     let awardOfficeRouter = awardRouter.grouped("office")
     let awardOfficeController = AwardOfficeController()
     awardOfficeRouter.get("list",      use: awardOfficeController.list)
     awardOfficeRouter.post("create",   use: awardOfficeController.create)
     awardOfficeRouter.delete("delete", use: awardOfficeController.delete)
+    awardOfficeRouter.get("index", use: awardOfficeController.index)
+    awardOfficeRouter.put("change", use: awardOfficeController.change)
+    
+    
+    let awardTypeRouter = awardRouter.grouped("type")
+    let awardTypeController = AwardTypeController()
+    awardTypeRouter.get("list",      use: awardTypeController.list)
+    awardTypeRouter.post("create",   use: awardTypeController.create)
+    awardTypeRouter.delete("delete", use: awardTypeController.delete)
+    awardTypeRouter.get("index", use: awardTypeController.index)
+    awardTypeRouter.put("change", use: awardTypeController.change)
+    
+    
 }

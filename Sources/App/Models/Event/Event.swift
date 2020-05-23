@@ -108,8 +108,14 @@ extension Private.Event: Migration {
             builder.field(for: \.maxPersons)
             builder.field(for: \.categoryId)
             builder.field(for: \.ownerId)
-            builder.reference(from: \.categoryId, to: \Private.Category.id, onUpdate: ._noAction, onDelete: ._noAction)
-            builder.reference(from: \.ownerId, to: \Private.User.id, onUpdate: ._noAction, onDelete: ._noAction)
+            builder.reference(from: \.categoryId,
+                              to: \Private.Category.id,
+                              onUpdate: ._noAction,
+                              onDelete: ._noAction)
+            builder.reference(from: \.ownerId,
+                              to: \Private.User.id,
+                              onUpdate: ._noAction,
+                              onDelete: ._noAction)
         }
     }
 }
