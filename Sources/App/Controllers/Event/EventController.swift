@@ -52,6 +52,20 @@ final class EventController {
     }
     
     func list(_ req: Request) throws -> Future<[Public.Event]> {
+        return try req.content.decode(Requests.Event.List.self).flatMap { params in
+            return try self.internalList(req).map { events in
+                if let memberId = params.memberId {
+                    return events.filter { $0.partArray
+                                                .filter { $0.userId == memberId }
+                                                .count > 0 }
+                } else {
+                    return events
+                }
+            }
+        }
+    }
+    
+    func internalList(_ req: Request) throws -> Future<[Public.Event]> {
         return Private.Event.query(on: req).all().flatMap { privateEvent in
             return try privateEvent.map { try $0.toPublicFuture(conn: req) }.flatten(on: req)
         }
@@ -100,6 +114,10 @@ extension Requests {
 
         struct Index: Content {
             var id: Int
+        }
+        
+        struct List: Codable {
+            var memberId: Int?
         }
         
         class Body {
